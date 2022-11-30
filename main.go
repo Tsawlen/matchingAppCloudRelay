@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Tsawlen/matchingAppCloudRelay/controller"
@@ -11,6 +12,8 @@ func main() {
 
 	controller.InitPub()
 
+	go controller.HandleIncoming()
+
 	router := mux.NewRouter()
 
 	router.HandleFunc("/publish", controller.ReceiveMessage).Methods("PUT")
@@ -20,7 +23,6 @@ func main() {
 		Addr:    ":8082",
 		Handler: router,
 	}
-
+	log.Println("CloudRelay is started and listens to 0.0.0.0:8082")
 	server.ListenAndServe()
-
 }

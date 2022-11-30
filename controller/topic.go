@@ -57,3 +57,24 @@ func subscribeToTopic(socket *websocket.Conn, topic *dataStructures.Topic) (bool
 	}
 	return false, errors.New("Topic not found!")
 }
+
+func UnsubscribeFromTopic(socket *websocket.Conn, topic *dataStructures.Topic) (bool, error) {
+	for counter, data := range Topics {
+		if topic.Name == data.Name {
+			for counter2, data := range data.Subscriber {
+				if data == socket {
+					if (len(Topics[counter].Subscriber) - 1) <= 0 {
+						Topics[counter].Subscriber = []*websocket.Conn{}
+					} else if (len(Topics[counter].Subscriber) - 1) <= counter2 {
+						Topics[counter].Subscriber = Topics[counter].Subscriber[:len(Topics[counter].Subscriber)-1]
+					} else {
+						Topics[counter].Subscriber = append(Topics[counter].Subscriber[:counter2], Topics[counter].Subscriber[counter2+1])
+					}
+				}
+			}
+
+			return true, nil
+		}
+	}
+	return false, errors.New("Topic not found!")
+}
